@@ -37,6 +37,13 @@
           }
         }
       }
+    },
+    {
+      "label": "test: current file",
+      "type": "shell",
+      "command": "npm test -- --include ${relativeFile} --watch=false",
+      "group": "test",
+      "problemMatcher": []
     }
   ]
 }
