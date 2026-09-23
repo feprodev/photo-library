@@ -1,0 +1,18 @@
+<mat-toolbar>
+  <nav>
+    <a
+      routerLink="/"
+      [matButton]="photosActive() ? 'filled' : 'text'"
+      [attr.aria-current]="photosActive() ? 'page' : null"
+    >
+      Photos
+    </a>
+    <a
+      routerLink="/favorites"
+      [matButton]="favoritesActive() ? 'filled' : 'text'"
+      [attr.aria-current]="favoritesActive() ? 'page' : null"
+    >
+      Favorites
+    </a>
+  </nav>
+</mat-toolbar>
