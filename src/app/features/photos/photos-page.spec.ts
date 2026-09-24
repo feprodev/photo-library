@@ -1,6 +1,10 @@
-import { signal } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
+import { DebugElement, signal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatProgressSpinnerHarness } from '@angular/material/progress-spinner/testing';
+import { By } from '@angular/platform-browser';
 import { Photo } from '../../core/photo';
+import { InfiniteScroll } from '../../shared/infinite-scroll/infinite-scroll';
 import { PhotoFeedStore } from './photo-feed-store';
 import { PhotosPage } from './photos-page';
 
@@ -9,20 +13,44 @@ const photos: Photo[] = [
   { id: '2', author: 'Paul Jarvis', width: 2500, height: 1667 },
 ];
 
+function createFeed() {
+  return {
+    photos: signal<Photo[]>([]),
+    loading: signal(false),
+    hasMore: signal(true),
+    loadMore: vi.fn(),
+  };
+}
+
 describe('PhotosPage', () => {
-  let feed: { photos: ReturnType<typeof signal<Photo[]>>; loadMore: ReturnType<typeof vi.fn> };
+  let feed: ReturnType<typeof createFeed>;
 
   beforeEach(() => {
-    feed = { photos: signal<Photo[]>([]), loadMore: vi.fn() };
+    vi.stubGlobal(
+      'IntersectionObserver',
+      class {
+        observe = vi.fn();
+        disconnect = vi.fn();
+      },
+    );
+    feed = createFeed();
     TestBed.configureTestingModule({
       providers: [{ provide: PhotoFeedStore, useValue: feed }],
     });
   });
 
-  async function render(): Promise<HTMLElement> {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  async function render(): Promise<ComponentFixture<PhotosPage>> {
     const fixture = TestBed.createComponent(PhotosPage);
     await fixture.whenStable();
-    return fixture.nativeElement;
+    return fixture;
+  }
+
+  function sentinel(fixture: ComponentFixture<PhotosPage>): DebugElement | null {
+    return fixture.debugElement.query(By.directive(InfiniteScroll));
   }
 
   it('loads the first page when the feed is empty', async () => {
@@ -34,9 +62,44 @@ describe('PhotosPage', () => {
   it('keeps the already loaded feed', async () => {
     feed.photos.set(photos);
 
-    const element = await render();
+    const fixture = await render();
 
     expect(feed.loadMore).not.toHaveBeenCalled();
-    expect(element.querySelectorAll('app-photo-grid img')).toHaveLength(2);
+    expect(fixture.nativeElement.querySelectorAll('app-photo-grid img')).toHaveLength(2);
+  });
+
+  it('loads the next page when the end of the feed comes into view', async () => {
+    feed.photos.set(photos);
+    const fixture = await render();
+
+    sentinel(fixture)!.triggerEventHandler('scrolled');
+
+    expect(feed.loadMore).toHaveBeenCalledOnce();
+  });
+
+  it('shows the spinner and pauses the sentinel while a page is loading', async () => {
+    feed.loading.set(true);
+    const fixture = await render();
+    const loader = TestbedHarnessEnvironment.loader(fixture);
+    const disabled = () => sentinel(fixture)!.injector.get(InfiniteScroll).disabled();
+
+    expect(await loader.hasHarness(MatProgressSpinnerHarness)).toBe(true);
+    expect(disabled()).toBe(true);
+
+    feed.loading.set(false);
+    await fixture.whenStable();
+
+    expect(await loader.hasHarness(MatProgressSpinnerHarness)).toBe(false);
+    expect(disabled()).toBe(false);
+  });
+
+  it('tells when the whole feed is loaded', async () => {
+    feed.photos.set(photos);
+    feed.hasMore.set(false);
+
+    const fixture = await render();
+
+    expect(sentinel(fixture)).toBeNull();
+    expect(fixture.nativeElement.querySelector('.end').textContent).toBe("That's all");
   });
 });

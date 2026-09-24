@@ -2,3 +2,14 @@
   display: block;
   padding: 16px;
 }
+
+mat-progress-spinner {
+  margin: 16px auto;
+}
+
+.end {
+  margin: 0;
+  padding: 24px 0 8px;
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
+}

@@ -1,1 +1,9 @@
 <app-photo-grid [photos]="feed.photos()" />
+@if (feed.loading()) {
+  <mat-progress-spinner mode="indeterminate" diameter="40" aria-label="Loading" />
+}
+@if (feed.hasMore()) {
+  <div appInfiniteScroll [disabled]="feed.loading()" (scrolled)="feed.loadMore()"></div>
+} @else {
+  <p class="end">That's all</p>
+}

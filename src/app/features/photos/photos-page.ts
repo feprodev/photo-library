@@ -1,10 +1,12 @@
 import { Component, inject, OnInit } from '@angular/core';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { InfiniteScroll } from '../../shared/infinite-scroll/infinite-scroll';
 import { PhotoGrid } from '../../shared/photo-grid/photo-grid';
 import { PhotoFeedStore } from './photo-feed-store';
 
 @Component({
   selector: 'app-photos-page',
-  imports: [PhotoGrid],
+  imports: [PhotoGrid, InfiniteScroll, MatProgressSpinner],
   templateUrl: './photos-page.html',
   styleUrl: './photos-page.scss',
 })
