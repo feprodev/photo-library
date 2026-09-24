@@ -2,7 +2,12 @@
 @if (feed.loading()) {
   <mat-progress-spinner mode="indeterminate" diameter="40" aria-label="Loading" />
 }
-@if (feed.hasMore()) {
+@if (feed.error()) {
+  <div class="error" role="alert">
+    <p>Couldn't load photos</p>
+    <button matButton="tonal" type="button" (click)="feed.retry()">Retry</button>
+  </div>
+} @else if (feed.hasMore()) {
   <div appInfiniteScroll [disabled]="feed.loading()" (scrolled)="feed.loadMore()"></div>
 } @else {
   <p class="end">That's all</p>

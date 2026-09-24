@@ -1,6 +1,7 @@
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { DebugElement, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatButtonHarness } from '@angular/material/button/testing';
 import { MatProgressSpinnerHarness } from '@angular/material/progress-spinner/testing';
 import { By } from '@angular/platform-browser';
 import { Photo } from '../../core/photo';
@@ -17,8 +18,10 @@ function createFeed() {
   return {
     photos: signal<Photo[]>([]),
     loading: signal(false),
+    error: signal(false),
     hasMore: signal(true),
     loadMore: vi.fn(),
+    retry: vi.fn(),
   };
 }
 
@@ -101,5 +104,23 @@ describe('PhotosPage', () => {
 
     expect(sentinel(fixture)).toBeNull();
     expect(fixture.nativeElement.querySelector('.end').textContent).toBe("That's all");
+  });
+
+  it('offers to retry when a page fails to load', async () => {
+    feed.photos.set(photos);
+    feed.error.set(true);
+    const fixture = await render();
+    const retry = await TestbedHarnessEnvironment.loader(fixture).getHarness(
+      MatButtonHarness.with({ text: 'Retry' }),
+    );
+
+    expect(fixture.nativeElement.querySelector('[role="alert"]').textContent).toContain(
+      "Couldn't load photos",
+    );
+    expect(sentinel(fixture)).toBeNull();
+
+    await retry.click();
+
+    expect(feed.retry).toHaveBeenCalledOnce();
   });
 });

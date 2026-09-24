@@ -7,9 +7,24 @@ mat-progress-spinner {
   margin: 16px auto;
 }
 
-.end {
-  margin: 0;
+.end,
+.error {
   padding: 24px 0 8px;
   text-align: center;
   color: var(--mat-sys-on-surface-variant);
+}
+
+.end {
+  margin: 0;
+}
+
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+
+  p {
+    margin: 0;
+  }
 }
