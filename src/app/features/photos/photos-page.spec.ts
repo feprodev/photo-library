@@ -3,7 +3,9 @@ import { DebugElement, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatButtonHarness } from '@angular/material/button/testing';
 import { MatProgressSpinnerHarness } from '@angular/material/progress-spinner/testing';
+import { MatSnackBarHarness } from '@angular/material/snack-bar/testing';
 import { By } from '@angular/platform-browser';
+import { FavoritesStore } from '../../core/favorites-store';
 import { Photo } from '../../core/photo';
 import { InfiniteScroll } from '../../shared/infinite-scroll/infinite-scroll';
 import { PhotoFeedStore } from './photo-feed-store';
@@ -25,8 +27,16 @@ function createFeed() {
   };
 }
 
+function createFavorites() {
+  return {
+    ids: signal<ReadonlySet<string>>(new Set()),
+    add: vi.fn(),
+  };
+}
+
 describe('PhotosPage', () => {
   let feed: ReturnType<typeof createFeed>;
+  let favorites: ReturnType<typeof createFavorites>;
 
   beforeEach(() => {
     vi.stubGlobal(
@@ -37,8 +47,12 @@ describe('PhotosPage', () => {
       },
     );
     feed = createFeed();
+    favorites = createFavorites();
     TestBed.configureTestingModule({
-      providers: [{ provide: PhotoFeedStore, useValue: feed }],
+      providers: [
+        { provide: PhotoFeedStore, useValue: feed },
+        { provide: FavoritesStore, useValue: favorites },
+      ],
     });
   });
 
@@ -122,5 +136,28 @@ describe('PhotosPage', () => {
     await retry.click();
 
     expect(feed.retry).toHaveBeenCalledOnce();
+  });
+
+  it('adds the clicked photo to favorites and confirms it', async () => {
+    feed.photos.set(photos);
+    const fixture = await render();
+
+    fixture.nativeElement.querySelectorAll('app-photo-grid button')[1].click();
+
+    expect(favorites.add).toHaveBeenCalledExactlyOnceWith(photos[1]);
+    const snackBar =
+      await TestbedHarnessEnvironment.documentRootLoader(fixture).getHarness(MatSnackBarHarness);
+    expect(await snackBar.getMessage()).toBe('Added to favorites');
+  });
+
+  it('marks photos that are already in favorites', async () => {
+    feed.photos.set(photos);
+    favorites.ids.set(new Set(['1']));
+
+    const fixture = await render();
+
+    const cards = fixture.nativeElement.querySelectorAll('app-photo-card');
+    expect(cards[0].querySelector('[aria-label="In favorites"]')).not.toBeNull();
+    expect(cards[1].querySelector('[aria-label="In favorites"]')).toBeNull();
   });
 });

@@ -24,6 +24,15 @@ describe('PhotoGrid', () => {
     expect(labels).toEqual(['Photo by Alejandro Escamilla', 'Photo by Paul Jarvis']);
   });
 
+  it('marks favorite photos', async () => {
+    fixture.componentRef.setInput('favoriteIds', new Set(['2']));
+    await fixture.whenStable();
+
+    const marked = buttons.map((button) => !!button.querySelector('[aria-label="In favorites"]'));
+
+    expect(marked).toEqual([false, true]);
+  });
+
   it('emits the clicked photo', () => {
     const photoClick = vi.fn();
     fixture.componentInstance.photoClick.subscribe(photoClick);

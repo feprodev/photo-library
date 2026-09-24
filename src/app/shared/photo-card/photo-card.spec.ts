@@ -28,6 +28,17 @@ describe('PhotoCard', () => {
       'https://cdn.test/id/42/400/600 1x, https://cdn.test/id/42/800/1200 2x',
     );
     expect(image.alt).toBe('Photo by Paul Jarvis');
+    expect(host.querySelector('[aria-label="In favorites"]')).toBeNull();
+  });
+
+  it('marks a favorite photo', async () => {
+    fixture.componentRef.setInput('favorite', true);
+    await fixture.whenStable();
+
+    const icon = await TestbedHarnessEnvironment.loader(fixture).getHarness(
+      MatIconHarness.with({ name: 'favorite' }),
+    );
+    expect(await (await icon.host()).getAttribute('aria-label')).toBe('In favorites');
   });
 
   it('shows a labelled placeholder when the image fails to load', async () => {

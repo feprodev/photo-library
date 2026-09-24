@@ -10,5 +10,6 @@ import { PhotoCard } from '../photo-card/photo-card';
 })
 export class PhotoGrid {
   readonly photos = input.required<readonly Photo[]>();
+  readonly favoriteIds = input<ReadonlySet<string>>(new Set());
   readonly photoClick = output<Photo>();
 }

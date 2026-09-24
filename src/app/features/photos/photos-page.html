@@ -1,4 +1,8 @@
-<app-photo-grid [photos]="feed.photos()" />
+<app-photo-grid
+  [photos]="feed.photos()"
+  [favoriteIds]="favorites.ids()"
+  (photoClick)="addToFavorites($event)"
+/>
 @if (feed.loading()) {
   <mat-progress-spinner mode="indeterminate" diameter="40" aria-label="Loading" />
 }

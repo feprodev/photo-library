@@ -59,6 +59,7 @@ describe('FavoritesStore', () => {
     expect(store.count()).toBe(2);
     expect(store.isFavorite('1')).toBe(true);
     expect(store.isFavorite('3')).toBe(false);
+    expect([...store.ids()]).toEqual(['1', '2']);
   });
 
   it('removes photos by id', () => {

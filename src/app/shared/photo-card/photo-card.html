@@ -5,3 +5,8 @@
 } @else {
   <img [ngSrc]="photo().id" [alt]="alt()" width="400" height="600" (error)="failed.set(true)" />
 }
+@if (favorite()) {
+  <mat-icon class="favorite" role="img" aria-hidden="false" aria-label="In favorites">
+    favorite
+  </mat-icon>
+}

@@ -11,6 +11,7 @@ import { Photo } from '../../core/photo';
 })
 export class PhotoCard {
   readonly photo = input.required<Photo>();
+  readonly favorite = input(false);
 
   protected readonly alt = computed(() => `Photo by ${this.photo().author}`);
   protected readonly failed = linkedSignal({ source: this.photo, computation: () => false });

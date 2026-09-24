@@ -2,7 +2,7 @@
   @for (photo of photos(); track photo.id) {
     <li>
       <button type="button" (click)="photoClick.emit(photo)">
-        <app-photo-card [photo]="photo" />
+        <app-photo-card [photo]="photo" [favorite]="favoriteIds().has(photo.id)" />
       </button>
     </li>
   }

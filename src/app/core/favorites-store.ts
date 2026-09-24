@@ -1,4 +1,4 @@
-import { computed, effect, ErrorHandler, inject, Service, signal } from '@angular/core';
+import { computed, effect, ErrorHandler, inject, Service, Signal, signal } from '@angular/core';
 import { Photo } from './photo';
 import { STORAGE } from './storage';
 
@@ -23,10 +23,12 @@ export class FavoritesStore {
   private readonly errorHandler = inject(ErrorHandler);
 
   private readonly state = signal<Photo[]>(this.read());
-  private readonly ids = computed(() => new Set(this.state().map((photo) => photo.id)));
 
   readonly favorites = this.state.asReadonly();
   readonly count = computed(() => this.state().length);
+  readonly ids: Signal<ReadonlySet<string>> = computed(
+    () => new Set(this.state().map((photo) => photo.id)),
+  );
 
   constructor() {
     effect(() => this.write(this.state()));
