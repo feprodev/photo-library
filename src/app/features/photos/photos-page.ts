@@ -1,7 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
+import { PhotoGrid } from '../../shared/photo-grid/photo-grid';
+import { PhotoFeedStore } from './photo-feed-store';
 
 @Component({
   selector: 'app-photos-page',
+  imports: [PhotoGrid],
   templateUrl: './photos-page.html',
+  styleUrl: './photos-page.scss',
 })
-export class PhotosPage {}
+export class PhotosPage implements OnInit {
+  protected readonly feed = inject(PhotoFeedStore);
+
+  ngOnInit(): void {
+    if (this.feed.photos().length === 0) {
+      this.feed.loadMore();
+    }
+  }
+}

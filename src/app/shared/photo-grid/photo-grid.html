@@ -1,0 +1,9 @@
+<ul>
+  @for (photo of photos(); track photo.id) {
+    <li>
+      <button type="button" (click)="photoClick.emit(photo)">
+        <app-photo-card [photo]="photo" />
+      </button>
+    </li>
+  }
+</ul>

@@ -1,0 +1,7 @@
+@if (failed()) {
+  <span class="fallback" role="img" [attr.aria-label]="alt()">
+    <mat-icon>broken_image</mat-icon>
+  </span>
+} @else {
+  <img [ngSrc]="photo().id" [alt]="alt()" width="400" height="600" (error)="failed.set(true)" />
+}

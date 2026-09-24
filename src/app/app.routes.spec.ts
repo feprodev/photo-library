@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
-import { RouterTestingHarness } from '@angular/router/testing';
 import { routes } from './app.routes';
 
 describe('routes', () => {
@@ -11,8 +10,8 @@ describe('routes', () => {
   });
 
   it('redirects unknown paths to /', async () => {
-    const harness = await RouterTestingHarness.create();
-    await harness.navigateByUrl('/unknown/path');
-    expect(TestBed.inject(Router).url).toBe('/');
+    const router = TestBed.inject(Router);
+    await router.navigateByUrl('/unknown/path');
+    expect(router.url).toBe('/');
   });
 });
