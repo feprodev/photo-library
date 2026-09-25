@@ -150,6 +150,21 @@ describe('PhotosPage', () => {
     expect(await snackBar.getMessage()).toBe('Added to favorites');
   });
 
+  it('does nothing when the clicked photo is already in favorites', async () => {
+    feed.photos.set(photos);
+    favorites.ids.set(new Set(['2']));
+    const fixture = await render();
+
+    fixture.nativeElement.querySelectorAll('app-photo-grid button')[1].click();
+
+    expect(favorites.add).not.toHaveBeenCalled();
+    expect(
+      await TestbedHarnessEnvironment.documentRootLoader(fixture).getAllHarnesses(
+        MatSnackBarHarness,
+      ),
+    ).toHaveLength(0);
+  });
+
   it('marks photos that are already in favorites', async () => {
     feed.photos.set(photos);
     favorites.ids.set(new Set(['1']));

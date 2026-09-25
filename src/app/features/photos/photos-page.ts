@@ -26,7 +26,9 @@ export class PhotosPage implements OnInit {
   }
 
   protected addToFavorites(photo: Photo): void {
-    this.favorites.add(photo);
-    this.snackBar.open('Added to favorites');
+    if (!this.favorites.ids().has(photo.id)) {
+      this.favorites.add(photo);
+      this.snackBar.open('Added to favorites');
+    }
   }
 }
