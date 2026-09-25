@@ -1,0 +1,18 @@
+:host {
+  display: block;
+  padding: 16px;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 48px 16px;
+  color: var(--mat-sys-on-surface-variant);
+
+  p {
+    margin: 0;
+    font: var(--mat-sys-title-medium);
+  }
+}
