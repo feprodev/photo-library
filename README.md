@@ -13,6 +13,7 @@ Demo: https://feprodev.github.io/photo-library/
 - `/favorites` shows all favorite photos. Click on a photo to open it. Favorites are saved in `localStorage`, so they stay after page reload.
 - `/photos/:id` shows one photo on the full screen with the author name and the "Remove from favorites" button. A direct link also works, even if the photo is not in favorites.
 - The header is the same on all pages. The active button is highlighted.
+- Light or dark theme, based on the system setting.
 
 ## How to run
 
@@ -81,4 +82,4 @@ Spec files are next to the code (`*.spec.ts`). There are tests for stores, API, 
 - All loaded photos stay in the DOM. With this data it is not a problem: Picsum has about 1000 photos, and the browser handles this number of lazy loaded images well. For a really endless feed it would need virtual scroll.
 - Only the start page is random, after it the order is the same as in the API. A really random feed without duplicates should come from the backend, for example a shuffled list with a `seed` parameter. Picsum doesn't have this.
 - Picsum has about 1000 photos, so at some point the feed ends and shows "That's all". From any start page there are at least 700 photos.
-- No e2e tests and no dark theme.
+- No e2e tests.
