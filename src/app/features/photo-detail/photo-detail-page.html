@@ -1,6 +1,6 @@
 @if (photo(); as photo) {
   <figure>
-    <div class="frame">
+    <div class="frame" [style.aspect-ratio]="photo.width / photo.height">
       <img
         [ngSrc]="photo.id"
         [alt]="'Photo by ' + photo.author"
