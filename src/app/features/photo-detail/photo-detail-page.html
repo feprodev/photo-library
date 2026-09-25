@@ -11,4 +11,8 @@
     </div>
     <figcaption>{{ photo.author }}</figcaption>
   </figure>
+  <button matButton="tonal" type="button" (click)="removeFromFavorites()">
+    <mat-icon>heart_minus</mat-icon>
+    Remove from favorites
+  </button>
 }

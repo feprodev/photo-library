@@ -1,5 +1,9 @@
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatButtonHarness } from '@angular/material/button/testing';
+import { MatSnackBarHarness } from '@angular/material/snack-bar/testing';
+import { provideRouter, Router } from '@angular/router';
 import { FavoritesStore } from '../../core/favorites-store';
 import { Photo } from '../../core/photo';
 import { providePicsumImageLoader } from '../../core/picsum-image-loader';
@@ -10,12 +14,20 @@ const photos: Photo[] = [
   { id: '2', author: 'Paul Jarvis', width: 2500, height: 1667 },
 ];
 
+function createFavorites() {
+  return { favorites: signal(photos), remove: vi.fn() };
+}
+
 describe('PhotoDetailPage', () => {
+  let favorites: ReturnType<typeof createFavorites>;
+
   beforeEach(() => {
+    favorites = createFavorites();
     TestBed.configureTestingModule({
       providers: [
+        provideRouter([{ path: 'favorites', children: [] }]),
         providePicsumImageLoader('https://cdn.test'),
-        { provide: FavoritesStore, useValue: { favorites: signal(photos) } },
+        { provide: FavoritesStore, useValue: favorites },
       ],
     });
   });
@@ -25,6 +37,12 @@ describe('PhotoDetailPage', () => {
     fixture.componentRef.setInput('id', id);
     await fixture.whenStable();
     return fixture;
+  }
+
+  function removeButton(fixture: ComponentFixture<PhotoDetailPage>): Promise<MatButtonHarness> {
+    return TestbedHarnessEnvironment.loader(fixture).getHarness(
+      MatButtonHarness.with({ text: /Remove from favorites/ }),
+    );
   }
 
   it('shows the photo with its original aspect ratio as the page priority image', async () => {
@@ -41,5 +59,26 @@ describe('PhotoDetailPage', () => {
     const fixture = await render('2');
 
     expect(fixture.nativeElement.querySelector('figcaption').textContent).toBe('Paul Jarvis');
+  });
+
+  it('removes the photo from favorites and returns to them', async () => {
+    const fixture = await render('2');
+
+    await (await removeButton(fixture)).click();
+
+    expect(TestBed.inject(Router).url).toBe('/favorites');
+    expect(favorites.remove).toHaveBeenCalledExactlyOnceWith('2');
+    const snackBar =
+      await TestbedHarnessEnvironment.documentRootLoader(fixture).getHarness(MatSnackBarHarness);
+    expect(await snackBar.getMessage()).toBe('Removed from favorites');
+  });
+
+  it('keeps the photo in favorites when leaving the page is cancelled', async () => {
+    const fixture = await render('2');
+    vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(false);
+
+    await (await removeButton(fixture)).click();
+
+    expect(favorites.remove).not.toHaveBeenCalled();
   });
 });

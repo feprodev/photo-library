@@ -2,7 +2,12 @@
   display: flex;
   flex: 1;
   flex-direction: column;
+  gap: 16px;
   padding: 16px;
+}
+
+button {
+  align-self: center;
 }
 
 figure {
