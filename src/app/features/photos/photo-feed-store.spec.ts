@@ -26,9 +26,12 @@ describe('PhotoFeedStore', () => {
       requests.push(request);
       return request;
     });
+    vi.spyOn(Math, 'random').mockReturnValue(0);
     TestBed.configureTestingModule({ providers: [{ provide: PhotoApi, useValue: { getPage } }] });
     store = TestBed.inject(PhotoFeedStore);
   });
+
+  afterEach(() => vi.restoreAllMocks());
 
   function respond(photos: Photo[]): void {
     const request = requests.at(-1)!;
@@ -54,6 +57,16 @@ describe('PhotoFeedStore', () => {
     expect(store.loading()).toBe(false);
     expect(store.photos()).toEqual(page(1));
     expect(store.hasMore()).toBe(true);
+  });
+
+  it.each([
+    [0.5, 6],
+    [0.999, 10],
+  ])('starts from a random page: Math.random() = %s → page %s', (random, expected) => {
+    vi.mocked(Math.random).mockReturnValue(random);
+    TestBed.runInInjectionContext(() => new PhotoFeedStore()).loadMore();
+
+    expect(getPage).toHaveBeenCalledWith(expected, PAGE_SIZE);
   });
 
   it('appends subsequent pages', () => {

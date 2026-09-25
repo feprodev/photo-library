@@ -2,6 +2,8 @@ import { computed, inject, Service, signal } from '@angular/core';
 import { Photo } from '../../core/photo';
 import { PAGE_SIZE, PhotoApi } from '../../core/photo-api';
 
+const MAX_START_PAGE = 10;
+
 interface FeedState {
   readonly photos: Photo[];
   readonly nextPage: number;
@@ -10,18 +12,18 @@ interface FeedState {
   readonly hasMore: boolean;
 }
 
-const initialState: FeedState = {
+const initialState = (): FeedState => ({
   photos: [],
-  nextPage: 1,
+  nextPage: 1 + Math.floor(Math.random() * MAX_START_PAGE),
   loading: false,
   error: false,
   hasMore: true,
-};
+});
 
 @Service()
 export class PhotoFeedStore {
   private readonly api = inject(PhotoApi);
-  private readonly state = signal(initialState);
+  private readonly state = signal(initialState());
 
   readonly photos = computed(() => this.state().photos);
   readonly loading = computed(() => this.state().loading);
