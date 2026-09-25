@@ -53,4 +53,26 @@ describe('PhotoApi', () => {
     expect(req.request.params.get('limit')).toBe(String(PAGE_SIZE));
     req.flush([]);
   });
+
+  it('requests a single photo by id and maps it', () => {
+    let photo: Photo | undefined;
+    api.getPhoto('10').subscribe((result) => (photo = result));
+
+    httpTesting.expectOne({ url: 'https://api.test/id/10/info', method: 'GET' }).flush({
+      id: '10',
+      author: 'Paul Jarvis',
+      width: 2500,
+      height: 1667,
+      url: 'https://unsplash.com/photos/6J--NXulQCs',
+      download_url: 'https://picsum.photos/id/10/2500/1667',
+    });
+
+    expect(photo).toEqual({ id: '10', author: 'Paul Jarvis', width: 2500, height: 1667 });
+  });
+
+  it('encodes the photo id in the path', () => {
+    api.getPhoto('../v2/list').subscribe();
+
+    httpTesting.expectOne('https://api.test/id/..%2Fv2%2Flist/info').flush({});
+  });
 });

@@ -7,7 +7,7 @@ export const API_URL = new InjectionToken<string>('API_URL');
 
 export const PAGE_SIZE = 30;
 
-interface PicsumListItem {
+interface PicsumPhoto {
   id: string;
   author: string;
   width: number;
@@ -16,7 +16,7 @@ interface PicsumListItem {
   download_url: string;
 }
 
-const toPhoto = ({ id, author, width, height }: PicsumListItem): Photo => ({
+const toPhoto = ({ id, author, width, height }: PicsumPhoto): Photo => ({
   id,
   author,
   width,
@@ -30,7 +30,13 @@ export class PhotoApi {
 
   getPage(page: number, size = PAGE_SIZE): Observable<Photo[]> {
     return this.http
-      .get<PicsumListItem[]>(`${this.apiUrl}/v2/list`, { params: { page, limit: size } })
+      .get<PicsumPhoto[]>(`${this.apiUrl}/v2/list`, { params: { page, limit: size } })
       .pipe(map((items) => items.map(toPhoto)));
+  }
+
+  getPhoto(id: string): Observable<Photo> {
+    return this.http
+      .get<PicsumPhoto>(`${this.apiUrl}/id/${encodeURIComponent(id)}/info`)
+      .pipe(map(toPhoto));
   }
 }

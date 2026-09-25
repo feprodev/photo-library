@@ -11,8 +11,19 @@
     </div>
     <figcaption>{{ photo.author }}</figcaption>
   </figure>
-  <button matButton="tonal" type="button" (click)="removeFromFavorites()">
-    <mat-icon>heart_minus</mat-icon>
-    Remove from favorites
-  </button>
+  @if (isFavorite()) {
+    <button matButton="tonal" type="button" (click)="removeFromFavorites()">
+      <mat-icon>heart_minus</mat-icon>
+      Remove from favorites
+    </button>
+  } @else {
+    <div class="not-favorite">
+      <p>Not in your favorites</p>
+      <a matButton routerLink="/favorites">Go to favorites</a>
+    </div>
+  }
+} @else if (photo() === null) {
+  <p class="error" role="alert">Couldn't load the photo</p>
+} @else {
+  <mat-progress-spinner mode="indeterminate" diameter="40" aria-label="Loading" />
 }

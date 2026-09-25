@@ -6,8 +6,31 @@
   padding: 16px;
 }
 
-button {
+button,
+.not-favorite,
+.error,
+mat-progress-spinner {
   align-self: center;
+}
+
+.not-favorite,
+.error {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.not-favorite {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  p {
+    margin: 0;
+  }
+}
+
+.error {
+  margin: 0;
+  padding-top: 24px;
 }
 
 figure {
