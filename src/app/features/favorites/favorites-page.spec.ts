@@ -2,7 +2,7 @@ import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { computed, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatButtonHarness } from '@angular/material/button/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { FavoritesStore } from '../../core/favorites-store';
 import { Photo } from '../../core/photo';
 import { FavoritesPage } from './favorites-page';
@@ -23,7 +23,10 @@ describe('FavoritesPage', () => {
   beforeEach(() => {
     favorites = createFavorites();
     TestBed.configureTestingModule({
-      providers: [provideRouter([]), { provide: FavoritesStore, useValue: favorites }],
+      providers: [
+        provideRouter([{ path: 'photos/:id', children: [] }]),
+        { provide: FavoritesStore, useValue: favorites },
+      ],
     });
   });
 
@@ -44,6 +47,16 @@ describe('FavoritesPage', () => {
     );
     expect(labels).toEqual(['Photo by Alejandro Escamilla', 'Photo by Paul Jarvis']);
     expect(fixture.nativeElement.querySelector('.empty')).toBeNull();
+  });
+
+  it('opens the clicked photo', async () => {
+    favorites.favorites.set(photos);
+    const fixture = await render();
+
+    fixture.nativeElement.querySelectorAll('app-photo-grid button')[1].click();
+    await fixture.whenStable();
+
+    expect(TestBed.inject(Router).url).toBe('/photos/2');
   });
 
   it('offers to browse photos when there are no favorites', async () => {

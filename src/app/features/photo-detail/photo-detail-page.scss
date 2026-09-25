@@ -1,0 +1,29 @@
+:host {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 16px;
+}
+
+figure {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+}
+
+.frame {
+  position: relative;
+  flex: 1;
+}
+
+img {
+  object-fit: contain;
+}
+
+figcaption {
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-title-medium);
+}

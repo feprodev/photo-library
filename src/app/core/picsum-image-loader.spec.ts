@@ -17,6 +17,13 @@ describe('picsumImageLoader', () => {
     expect(loader({ src: '42' })).toBe('https://cdn.test/id/42/1080/1080');
   });
 
+  it('keeps the aspect ratio passed in loader params', () => {
+    const loaderParams = { aspectRatio: 1.5 };
+
+    expect(loader({ src: '42', width: 640, loaderParams })).toBe('https://cdn.test/id/42/640/427');
+    expect(loader({ src: '42', loaderParams })).toBe('https://cdn.test/id/42/1080/720');
+  });
+
   it('is provided as IMAGE_LOADER', () => {
     TestBed.configureTestingModule({ providers: [providePicsumImageLoader('https://cdn.test')] });
 

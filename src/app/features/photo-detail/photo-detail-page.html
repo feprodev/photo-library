@@ -1,1 +1,14 @@
-<h1>Photo {{ id() }}</h1>
+@if (photo(); as photo) {
+  <figure>
+    <div class="frame">
+      <img
+        [ngSrc]="photo.id"
+        [alt]="'Photo by ' + photo.author"
+        [loaderParams]="{ aspectRatio: photo.width / photo.height }"
+        fill
+        priority
+      />
+    </div>
+    <figcaption>{{ photo.author }}</figcaption>
+  </figure>
+}
